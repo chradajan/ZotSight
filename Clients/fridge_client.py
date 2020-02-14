@@ -174,7 +174,8 @@ class Client:
         with open(imgPath, 'rb') as f:
             bytes_read = f.read(4096)
             while(bytes_read):
-                self.server.sendall(bytes_read)
+                self.server.send(bytes_read)
+                #self.server.sendall(bytes_read)
         '''
         with open(imgPath, 'rb') as f:
             for _ in progress:
