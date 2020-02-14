@@ -5,6 +5,8 @@ from time import sleep
 from Location.locationDetector import Layout, LocationDetector
 import cv2
 import numpy as np
+import os
+import tqdm
 
 def gstreamer_pipeline( capture_width=1280, capture_height=720,
                         display_width=1280, display_height=720,
@@ -40,6 +42,15 @@ def get_image( videoCap  ):
         print("Failed to read frame")
         
     return image
+
+def get_rgb( videoCap ):
+    image = get_image( videoCap )
+    while type(image) != np.ndarray:
+        print("Trying to get another image to make pgm")
+        image = get_image( videoCap )
+    rgbImg = cv2.cvtColor( image, cv2.COLOR_BGR2RGB )
+    
+    return rgbImg
 
 def apply_Prewitt( img ):
     img_filtered = cv2.GaussianBlur( img, (3,3), 0 )
@@ -150,14 +161,29 @@ class Client:
                 if self.createAccount():
                     self.mainLoop()
 
+    def sendImage(self):
+        pic = get_pgm(self.videoCap)
+        locator = LocationDetector(layout = pic)
+        locator.saveLayout(saveFileName = './pic/pic.pgm')
+        imgPath = './pic/pic.pgm'
+        filesize = os.path.getsize(imgPath)
+        self.send(str(filesize), True)
+        progress = tqdm.tqdm(range(filesize), "Sending pgm", unit='B', unit_scale=True, unit_divisor=1024)
+
+        with open(imgPath, 'rb') as f:
+            for _ in progress:
+                bytes_read = f.read(4096)
+                if not bytes_read:
+                    break
+                self.server.sendall(bytes_read)
+                progress.update(len(bytes_read))
+
     def mainLoop(self):
         arduino = serial.Serial('/dev/ttyUSB0', 115200, timeout = 0.1)
         while True:
             data = arduino.readline()[:-2]
             if data == b"DoorClosed":
-                pic = get_pgm(self.videoCap)
-                locator = LocationDetector(layout = pic)
-                locator.saveLayout(saveFileName = './pic/pic.pgm')
+                self.sendImage()                
                 print("Door Closed")
 
 if __name__ == '__main__':

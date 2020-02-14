@@ -1,6 +1,8 @@
 import socket
 import pymysql
 import bcrypt
+import os
+import tqdm
 
 class Fridge_Server:
     def __init__(self, clientSocket, db, clientType):
@@ -59,7 +61,16 @@ class Fridge_Server:
             self.db.rollback()
             self.send("creation_failed")
             return False
-        
+
+    def receiveImage(self, fileSize):
+        progress = tqdm.tqdm(range(fileSize), "Receiving pgm", unit='B', unit_scale=True, unit_divisor=1024)
+        with open("../../snapshots/{}/snapshot.pgm".format(self.username), 'wb') as f:
+            for _ in progress:
+                bytes_read = self.client.recv(4096)
+                if not bytes_read:
+                    break
+                f.write(bytes_read)
+                progress.update(len(bytes_read))
 
     def mainloop(self):
         while True:
@@ -75,8 +86,10 @@ class Fridge_Server:
                     break
 
         while True:
-            message = self.getDecodedMessage(True)
+            fileSize = int(self.getDecodedMessage(True))
             if not message:
                 continue
+            else:
+                self.receiveImage(fileSize)
 
             
