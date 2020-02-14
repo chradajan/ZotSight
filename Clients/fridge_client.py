@@ -184,6 +184,7 @@ class Client:
         arduino = serial.Serial('/dev/ttyUSB0', 115200, timeout = 0.1)
         while True:
             data = arduino.readline()[:-2]
+            arduino.flushInput()
             if data == b"DoorClosed":
                 print("Door Closed")
                 self.sendImage()
