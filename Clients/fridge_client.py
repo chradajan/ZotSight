@@ -174,8 +174,9 @@ class Client:
             for _ in progress:
                 bytes_read = f.read(4096)
                 if not bytes_read:
-                    self.server.send(b"finished")
+                    self.send("finished")
                     break
+                self.send("more", True)
                 self.server.sendall(bytes_read)
                 progress.update(len(bytes_read))
 
