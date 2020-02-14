@@ -102,10 +102,7 @@ class Fridge_Server:
 
         while True:
             fileSize = int(self.getDecodedMessage(True))
-            if not message:
-                continue
-            else:
-                self.receiveImage(fileSize)
-                print("Image received")
+            self.receiveImage(fileSize)
+            print("Image received")
 
             
