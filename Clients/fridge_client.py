@@ -153,7 +153,7 @@ class Client:
 
     def start(self):
         while True:
-            arg = input("Login (L) or Create Account (C)?\n").lower()
+            arg = input("Login (L) or Create Account (C)?\n>>> ").lower()
             if arg == "l":
                 if self.login():
                     self.mainLoop()
@@ -174,7 +174,6 @@ class Client:
             for _ in progress:
                 bytes_read = f.read(4096)
                 if not bytes_read:
-                    self.send("finished")
                     print("Image sent")
                     f.close()
                     return
