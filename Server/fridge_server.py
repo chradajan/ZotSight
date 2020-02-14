@@ -77,6 +77,7 @@ class Fridge_Server:
             for _ in progress:
                 bytes_read = self.client.recv(4096)
                 if not bytes_read:
+                    self.send("finished")
                     break
                 f.write(bytes_read)
                 progress.update(len(bytes_read))
@@ -96,7 +97,6 @@ class Fridge_Server:
 
         while True:
             fileSize = int(self.getDecodedMessage(True))
-            print("Receiving image...")
             self.receiveImage(fileSize)
             print("Image received")
 
