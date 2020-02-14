@@ -1,6 +1,67 @@
 import socket
 from getpass import getpass
 import serial
+from time import sleep
+from Location.locationDetector import Layout, LocationDetector
+import cv2
+import numpy as np
+
+def gstreamer_pipeline( capture_width=1280, capture_height=720,
+                        display_width=1280, display_height=720,
+                        framerate=60, flip_method=0 ):
+    return (
+        "nvarguscamerasrc ! "
+        "video/x-raw(memory:NVMM), "
+        "width=%d, height=%d, "
+        "format=NV12, framerate=%d/1 ! "
+        "nvvidconv flip-method=%d ! "
+        "video/x-raw, width=%d, height=%d, format=BGRx ! "
+        "videoconvert ! "
+        "video/x-raw, format=BGR ! " 
+        "appsink max-buffers=1 drop=true sync=false"
+        % (
+            capture_width,
+            capture_height,
+            framerate,
+            flip_method,
+            display_width,
+            display_height,
+        )
+    )
+
+def get_image( videoCap  ):
+    image = None
+    if not videoCap.isOpened():
+        print("Camera not opened")
+    else:
+        goodRead, image = videoCap.read( )
+
+    if not goodRead:
+        print("Failed to read frame")
+        
+    return image
+
+def apply_Prewitt( img ):
+    img_filtered = cv2.GaussianBlur( img, (3,3), 0 )
+    xformX = np.array([[1,1,1],[0,0,0],[-1,-1,-1]])
+    xformY = np.array([[-1,0,1],[-1,0,1],[-1,0,1]])
+    imgPrewittX = cv2.filter2D( img_filtered, -1, xformX )
+    imgPrewittY = cv2.filter2D( img_filtered, -1, xformY )
+    return imgPrewittX + imgPrewittY
+
+def get_pgm( videoCap ):
+    '''captures a frame and saves it in a specified format at some spefied location
+       format = { whatever_recogniziton_needs, pgm}
+       return file path (or an object with the image in it? like Layout'''
+    image = get_image( videoCap )
+    while type(image) != np.ndarray:
+        print("Trying to get another image to make pgm")
+        image = get_image( videoCap )
+    grayImg = cv2.cvtColor( image, cv2.COLOR_BGR2GRAY )
+    edgeDetectedImg = apply_Prewitt( grayImg )
+    
+    return Layout( bitmap = edgeDetectedImg )
+
 
 class Client:
     def __init__(self):
@@ -9,6 +70,7 @@ class Client:
         self.loggedIn = False
         self.username = ''
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.videoCap = cv2.VideoCapture(gstreamer_pipeline(flip_method=2), cv2.CAP_GSTREAMER)
         print("Welcome to ZotSight")
 
     def connect(self):
@@ -93,8 +155,10 @@ class Client:
         while True:
             data = arduino.readline()[:-2]
             if data == b"DoorClosed":
+                pic = get_pgm(self.videoCap)
+                locator = LocationDetector(layout = pic)
+                locator.saveLayout(saveFileName = './pic/pic.pgm')
                 print("Door Closed")
-        
 
 if __name__ == '__main__':
     c = Client()
