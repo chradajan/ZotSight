@@ -63,14 +63,21 @@ class Fridge_Server:
             return False
 
     def receiveImage(self, fileSize):
-        progress = tqdm.tqdm(range(fileSize), "Receiving pgm", unit='B', unit_scale=True, unit_divisor=1024)
+        #progress = tqdm.tqdm(range(fileSize), "Receiving pgm", unit='B', unit_scale=True, unit_divisor=1024)
         maxReads = fileSize / 4096
         if fileSize % 4096 != 0:
             maxReads += 1
-        i = 0
+        #i = 0
+
+        with open("../../snapshots/{}/snapshot.pgm".format(self.username), 'wb') as f:
+            bytes_read = self.client.recv(4096)
+            while(bytes_read):
+                f.write(bytes_read)
+
+        '''
         with open("../../snapshots/{}/snapshot.pgm".format(self.username), 'wb') as f:
             for _ in progress:
-                if i == maxReads - 1:
+                if i == maxReads:
                     return
                 bytes_read = self.client.recv(4096)
                 if not bytes_read:
@@ -78,6 +85,7 @@ class Fridge_Server:
                 f.write(bytes_read)
                 i += 1
                 progress.update(len(bytes_read))
+        '''
 
     def mainloop(self):
         while True:
