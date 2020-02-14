@@ -73,6 +73,7 @@ class Fridge_Server:
             bytes_read = self.client.recv(4096)
             while(bytes_read):
                 f.write(bytes_read)
+                bytes_read = self.client.recv(4096)
 
         '''
         with open("../../snapshots/{}/snapshot.pgm".format(self.username), 'wb') as f:
