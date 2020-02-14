@@ -8,6 +8,7 @@ from fridge_server import Fridge_Server
           
 def NewThread(clientSocket, db):
     message = str(clientSocket.recv(1024).decode('ascii'))
+    clientSocket.send("received".encode('ascii'))
 
     if message == 'f':
         connection = Fridge_Server(clientSocket, db, 'f')
