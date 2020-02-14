@@ -67,7 +67,7 @@ class Fridge_Server:
         with open("../../snapshots/{}/snapshot.pgm".format(self.username), 'wb') as f:
             for _ in progress:
                 bytes_read = self.client.recv(4096)
-                if not bytes_read:
+                if len(bytes_read) < 5:
                     break
                 f.write(bytes_read)
                 progress.update(len(bytes_read))
