@@ -77,7 +77,6 @@ class Fridge_Server:
             for _ in progress:
                 bytes_read = self.client.recv(4096)
                 if not bytes_read:
-                    self.send("finished")
                     break
                 f.write(bytes_read)
                 progress.update(len(bytes_read))

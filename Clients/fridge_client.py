@@ -176,7 +176,6 @@ class Client:
                 bytes_read = f.read(4096)
                 self.server.sendall(bytes_read)
                 if not bytes_read:
-                    assert self.receive() == "finished"
                     break
                 progress.update(len(bytes_read))
 
