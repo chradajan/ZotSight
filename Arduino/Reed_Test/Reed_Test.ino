@@ -13,7 +13,7 @@ void setup()
   state = 0;
   doorState = digitalRead(reed);
   //Wait for door to close
-  while(doorState == HIGH)
+  while(doorState == LOW)
   {
     delay(500);
     doorState = digitalRead(reed);
@@ -27,12 +27,12 @@ void loop()
   switch(state)
   {
     case 0:
-      if(doorState == HIGH)
+      if(doorState == LOW)
         state = 1;
       break;
     case 1:
       digitalWrite(led, HIGH);
-      if(doorState == LOW)
+      if(doorState == HIGH)
         state = 2;
       break;
     case 2:

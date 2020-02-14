@@ -83,16 +83,20 @@ def NewThread(clientSocket):
     clientSocket.close()
 
 def main():
-    port = 1000
+    port = 1050
+    ip = 'ec2-13-52-78-168.us-west-1.compute.amazonaws.com'
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    serverSocket.bind(("localhost", port))
+    serverSocket.bind((ip, port))
     serverSocket.listen(10)
 
     while True:
-        print("Socket now listening...")
-        clientSocket, addr = serverSocket.accept()
-        print("Connected to: ", addr[0], ":", addr[1])
-        start_new_thread(NewThread, (clientSocket,))
+        try:
+            print("Socket now listening...")
+            clientSocket, addr = serverSocket.accept()
+            print("Connected to: ", addr[0], ":", addr[1])
+            start_new_thread(NewThread, (clientSocket,))
+        except KeyboardInterrupt:
+            break
 
     serverSocket.close()
 
