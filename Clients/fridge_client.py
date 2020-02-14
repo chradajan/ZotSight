@@ -168,8 +168,6 @@ class Client:
         imgPath = './pic/pic.pgm'
         filesize = os.path.getsize(imgPath)
 
-        self.server.sendfile(open(imgPath))
-
         self.send(str(filesize), True)
         progress = tqdm.tqdm(range(filesize), "Sending pgm", unit='B', unit_scale=True, unit_divisor=1024)
 
