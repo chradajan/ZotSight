@@ -5,7 +5,7 @@ class Client:
     def __init__(self):
         #self.host = 'localhost'
         self.host = 'ec2-13-52-78-168.us-west-1.compute.amazonaws.com'
-        self.port = 1001
+        self.port = 1050
         self.loggedIn = False
         self.username = ''
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
