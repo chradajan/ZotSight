@@ -3,8 +3,8 @@ from _thread import start_new_thread
 import threading
 import pymysql
 import bcrypt
-from Client_Server import Client_Server
-from Fridge_Server import Fridge_Server
+from client_server import Client_Server
+from fridge_server import Fridge_Server
           
 def NewThread(clientSocket, db):
     message = str(clientSocket.recv(1024).decode('ascii'))
