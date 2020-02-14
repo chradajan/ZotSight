@@ -173,12 +173,13 @@ class Client:
         with open(imgPath, 'rb') as f:
             for _ in progress:
                 bytes_read = f.read(4096)
+                progress.update(len(bytes_read))
                 if not bytes_read:
+                    self.send('')
                     print("Image sent")
                     f.close()
                     return
                 self.server.sendall(bytes_read)
-                progress.update(len(bytes_read))
 
     def mainLoop(self):
         arduino = serial.Serial('/dev/ttyUSB0', 115200, timeout = 0.1)
