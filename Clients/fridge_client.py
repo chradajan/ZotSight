@@ -167,6 +167,9 @@ class Client:
         locator.saveLayout(saveFileName = './pic/pic.pgm')
         imgPath = './pic/pic.pgm'
         filesize = os.path.getsize(imgPath)
+
+        self.server.sendfile(open(imgPath))
+
         self.send(str(filesize), True)
         progress = tqdm.tqdm(range(filesize), "Sending pgm", unit='B', unit_scale=True, unit_divisor=1024)
 
@@ -174,9 +177,8 @@ class Client:
             for _ in progress:
                 bytes_read = f.read(4096)
                 if not bytes_read:
-                    self.send("finished")
+                    self.server.send(''.encode())
                     break
-                self.send("more", True)
                 self.server.sendall(bytes_read)
                 progress.update(len(bytes_read))
 

@@ -66,15 +66,11 @@ class Fridge_Server:
         progress = tqdm.tqdm(range(fileSize), "Receiving pgm", unit='B', unit_scale=True, unit_divisor=1024)
         with open("../../snapshots/{}/snapshot.pgm".format(self.username), 'wb') as f:
             for _ in progress:
-                message = self.getDecodedMessage(True)
-                if message == "more":
-                    bytes_read = self.client.recv(4096)
-                    if not bytes_read:
-                        break
-                    f.write(bytes_read)
-                    progress.update(len(bytes_read))
-                elif message == "finished":
+                bytes_read = self.client.recv(4096)
+                if not bytes_read:
                     break
+                f.write(bytes_read)
+                progress.update(len(bytes_read))
 
     def mainloop(self):
         while True:
