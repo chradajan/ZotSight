@@ -169,8 +169,13 @@ class Client:
         filesize = os.path.getsize(imgPath)
 
         self.send(str(filesize), True)
-        progress = tqdm.tqdm(range(filesize), "Sending pgm", unit='B', unit_scale=True, unit_divisor=1024)
+        #progress = tqdm.tqdm(range(filesize), "Sending pgm", unit='B', unit_scale=True, unit_divisor=1024)
 
+        with open(imgPath, 'rb') as f:
+            bytes_read = f.read(4096)
+            while(bytes_read):
+                self.server.sendall(bytes_read)
+        '''
         with open(imgPath, 'rb') as f:
             for _ in progress:
                 bytes_read = f.read(4096)
@@ -179,6 +184,7 @@ class Client:
                     break
                 self.server.sendall(bytes_read)
                 progress.update(len(bytes_read))
+        '''
 
     def mainLoop(self):
         arduino = serial.Serial('/dev/ttyUSB0', 115200, timeout = 0.1)
