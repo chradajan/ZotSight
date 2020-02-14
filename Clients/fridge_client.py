@@ -174,7 +174,10 @@ class Client:
             for _ in progress:
                 bytes_read = f.read(4096)
                 if not bytes_read:
-                    break
+                    self.send("finished")
+                    print("Image sent")
+                    f.close()
+                    return
                 self.server.sendall(bytes_read)
                 progress.update(len(bytes_read))
 
@@ -183,8 +186,8 @@ class Client:
         while True:
             data = arduino.readline()[:-2]
             if data == b"DoorClosed":
-                self.sendImage()                
                 print("Door Closed")
+                self.sendImage()                
 
 if __name__ == '__main__':
     c = Client()
