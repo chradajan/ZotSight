@@ -70,8 +70,10 @@ class Fridge_Server:
         i = 0
         with open("../../snapshots/{}/snapshot.pgm".format(self.username), 'wb') as f:
             for _ in progress:
+                if i == maxReads:
+                    break
                 bytes_read = self.client.recv(4096)
-                if not bytes_read or i == maxReads:
+                if not bytes_read:
                     break
                 f.write(bytes_read)
                 i += 1
