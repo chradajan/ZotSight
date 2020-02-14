@@ -176,7 +176,7 @@ class Client:
                 bytes_read = f.read(4096)
                 if not bytes_read:
                     break
-                self.server.send(bytes_read)
+                self.server.sendall(bytes_read)
                 progress.update(len(bytes_read))
 
     def mainLoop(self):
