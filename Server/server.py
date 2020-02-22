@@ -23,7 +23,8 @@ def NewThread(clientSocket, db):
 def main():
     port = 1050
     ip = 'ec2-13-52-78-168.us-west-1.compute.amazonaws.com'
-    db = pymysql.connect('fridge-db.cq9smwtzhpgg.us-west-1.rds.amazonaws.com', 'admin', 'ZotSight', 'fridge-db')
+    #Username, password, and DB name removed for uploading
+    db = pymysql.connect('fridge-db.cq9smwtzhpgg.us-west-1.rds.amazonaws.com', 'USERNAME', 'PASSSWORD', 'DB NAME')
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serverSocket.bind((ip, port))
     serverSocket.listen(10)
